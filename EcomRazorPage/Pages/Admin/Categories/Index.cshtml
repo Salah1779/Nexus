@@ -1,0 +1,61 @@
+@page
+@model EcomRazorPage.Pages.Admin.Categories.IndexModel
+@{
+    ViewData["Title"] = "Categories Management";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Categories</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="/Admin">Dashboard</a></li>
+        <li class="breadcrumb-item active">Categories</li>
+    </ol>
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-tags me-1"></i>
+                Categories List
+            </div>
+            <a asp-page="Create" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add New Category
+            </a>
+        </div>
+        <div class="card-body">
+            <table class="table data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Display Order</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <tr>
+                            <td>@category.Name</td>
+                            <td>@category.Description</td>
+                            <td>@category.DisplayOrder</td>
+                            <td>
+                                <span class="badge @(category.IsActive ? "bg-success" : "bg-danger")">
+                                    @(category.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                            <td>
+                                <a asp-page="./Edit" asp-route-id="@category.Id" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a asp-page="./Delete" asp-route-id="@category.Id" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

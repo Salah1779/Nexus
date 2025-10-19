@@ -1,0 +1,21 @@
+@page "{id:int}"
+@model EcomRazorPage.Pages.Public.DetailsModel
+@{
+    ViewData["Title"] = "Article Details";
+}
+<div class="form-container fade-in-up">
+    <div class="article-preview-card">
+        <img src="@Model.Article.ImageUrl" alt="@Model.Article.Title" class="preview-image" />
+        <div class="preview-info">
+            <div class="preview-title">@Model.Article.Title</div>
+            <div class="preview-description">@Model.Article.Description</div>
+            <span class="preview-price">$@Model.Article.Price</span>
+            <div>Category: @Model.Article.CategoryName</div>
+            <div>Stock: @Model.Article.StockQuantity</div>
+        </div>
+    </div>
+    <form>
+        <button type="button" class="btn-primary" disabled>Add to Cart</button>
+    </form>
+    <a href="/Public" class="back-link">&larr; Back to Articles</a>
+</div>

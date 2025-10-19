@@ -1,0 +1,70 @@
+﻿@page "{id:guid}"
+@model EcomApp.Pages.Articles.DeleteModel 
+
+@{
+    ViewData["Title"] = "Delete Article";
+}
+
+<link rel="stylesheet" href="~/css/articles.css" />
+
+<div class="articles-container">
+    <div class="page-header">
+        <div>
+            <a asp-page="./Index" class="back-link"> 
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back to Articles
+            </a>
+            <h1>Delete Article</h1>
+        </div>
+    </div>
+
+    <div class="delete-container">
+        <div class="warning-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+        </div>
+
+        <h2 class="delete-header">Are you absolutely sure you want to delete this article?</h2>
+        <p class="delete-subheader">Review the article details below before proceeding with the deletion.</p>
+
+        <div class="article-preview-card">
+            <img src="@Model.Article.ImageUrl" alt="@Model.Article.Title" class="preview-image" /> 
+            <div class="preview-info">
+                <h3 class="preview-title">@Model.Article.Title</h3> 
+                <p class="preview-description">@Model.Article.Description</p> 
+                <span class="preview-price">@Model.Article.Price.ToString("C")</span>
+            </div>
+        </div>
+
+        <p class="delete-warning">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            This action cannot be undone. The article will be permanently removed.
+        </p>
+
+        <form method="post"> 
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Article.Id" /> 
+
+            <div class="form-actions delete-actions">
+                <a asp-page="./Index" class="btn-secondary">Cancel</a>
+                <button type="submit" class="btn-danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Delete Article
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,150 @@
+@page
+@model EcomRazorPage.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "_AdminLayout";
+}
+
+<div class="dashboard">
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card">
+                <h3>Total Articles</h3>
+                <div class="number">@Model.TotalArticles</div>
+                <div class="trend">
+                    <i class="fas fa-box"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <h3>Total Categories</h3>
+                <div class="number">@Model.TotalCategories</div>
+                <div class="trend">
+                    <i class="fas fa-tags"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <h3>Total Value</h3>
+                <div class="number">@Model.TotalValue.ToString("C")</div>
+                <div class="trend">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <h3>Low Stock Items</h3>
+                <div class="number">@Model.LowStockArticles.Count</div>
+                <div class="trend">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Low Stock Alert</h5>
+                    <a href="/Admin/Articles" class="btn btn-primary btn-sm">View All Articles</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Article</th>
+                                    <th>Category</th>
+                                    <th>Current Stock</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var article in Model.LowStockArticles)
+                                {
+                                    <tr>
+                                        <td>@article.Title</td>
+                                        <td>@(article.Category?.Name ?? "Uncategorized")</td>
+                                        <td>
+                                            <span class="badge bg-danger">@article.StockQuantity</span>
+                                        </td>
+                                        <td>@article.Price.ToString("C")</td>
+                                        <td>
+                                            <a href="/Admin/Articles/Edit/@article.Id" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Pages/Admin/Categories/Index.cshtml (add checkboxes and bulk delete button) *@
+    <form method="post" asp-page-handler="BulkDelete">
+        <div class="card-body">
+            <table class="table data-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll" /></th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Display Order</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="selectedIds" value="@category.Id" class="select-row" />
+                            </td>
+                            <td>@category.Name</td>
+                            <td>@category.Description</td>
+                            <td>@category.DisplayOrder</td>
+                            <td>
+                                <span class="badge @(category.IsActive ? "bg-success" : "bg-danger")">
+                                    @(category.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                            <td>
+                                <a asp-page="./Edit" asp-route-id="@category.Id" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a asp-page="./Delete" asp-route-id="@category.Id" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-warning mt-2">Delete Selected</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Initialize any dashboard widgets or charts here
+        });
+        document.getElementById('selectAll').addEventListener('change', function () {
+            var checked = this.checked;
+            document.querySelectorAll('.select-row').forEach(function (cb) {
+                cb.checked = checked;
+            });
+        });
+    </script>
+}

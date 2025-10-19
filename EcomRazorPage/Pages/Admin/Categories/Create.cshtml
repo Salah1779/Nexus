@@ -1,0 +1,35 @@
+@page
+@model EcomRazorPage.Pages.Admin.Categories.CreateModel
+@{
+    ViewData["Title"] = "Create Category";
+    Layout = "_AdminLayout";
+}
+
+<h1>Create Category</h1>
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label asp-for="Category.Name"></label>
+        <input asp-for="Category.Name" class="form-control" />
+        <span asp-validation-for="Category.Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Category.Description"></label>
+        <textarea asp-for="Category.Description" class="form-control"></textarea>
+        <span asp-validation-for="Category.Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Category.DisplayOrder"></label>
+        <input asp-for="Category.DisplayOrder" class="form-control" />
+        <span asp-validation-for="Category.DisplayOrder" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Category.IsActive"></label>
+        <input asp-for="Category.IsActive" type="checkbox" />
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
+</form>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

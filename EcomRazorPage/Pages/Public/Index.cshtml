@@ -1,0 +1,138 @@
+@page
+@model EcomRazorPage.Pages.Public.IndexModel
+@{
+    ViewData["Title"] = "Browse Articles";
+}
+<!-- NexaCart Public Article Browse/Search Page -->
+<div class="articles-container">
+    <div class="header">
+        <h1>NexaCart</h1>
+        <!-- Search and filter form -->
+        <form method="get" class="form-row" autocomplete="off" aria-label="Search articles">
+            <div style="position:relative;width:100%;">
+                <!-- Search input with ARIA attributes for accessibility -->
+                <input type="text" id="searchInput" name="search" value="@Model.ViewModel.SearchTerm" placeholder="Search articles..." class="form-control" autocomplete="off" aria-autocomplete="list" aria-controls="autocompleteList" aria-label="Search articles" />
+                <!-- Autocomplete suggestion list -->
+                <ul id="autocompleteList" class="form-control" style="position:absolute;top:100%;left:0;right:0;z-index:10;background:white;list-style:none;margin:0;padding:0;display:none;" role="listbox"></ul>
+            </div>
+            <!-- Category filter dropdown -->
+            <select name="category" class="form-control" aria-label="Filter by category">
+                <option value="">All Categories</option>
+                @foreach (var cat in Model.ViewModel.Categories)
+                {
+                    <option value="@cat" selected="@(Model.ViewModel.SelectedCategory == cat ? "selected" : null)">@cat</option>
+                }
+            </select>
+            <button type="submit" class="btn-primary">Search</button>
+        </form>
+    </div>
+    <!-- Article grid -->
+    <div class="articles-grid">
+        @if (Model.ViewModel.Articles.Count == 0)
+        {
+            <!-- Empty state UI -->
+            <div class="empty-state fade-in-up">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2a4 4 0 004 4h2a4 4 0 004-4z" /></svg>
+                <h2>No articles found</h2>
+                <p>Try adjusting your search or filter criteria.</p>
+            </div>
+        }
+        else
+        {
+            foreach (var article in Model.ViewModel.Articles)
+            {
+                <div class="article-card fade-in-up">
+                    <img src="@article.ImageUrl" alt="@article.Title" class="article-image" />
+                    <div class="article-info">
+                        <div class="article-title">@article.Title</div>
+                        <div class="article-description">@article.Description</div>
+                        <span class="article-price">$@article.Price</span>
+                        <a href="/Public/Details/@article.Id" class="btn-secondary">View Details</a>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <!-- Pagination controls -->
+    <div class="form-actions" style="justify-content:center;">
+        @if (Model.ViewModel.TotalPages > 1)
+        {
+            <nav aria-label="Pagination">
+                <ul class="pagination">
+                    @for (int i = 1; i <= Model.ViewModel.TotalPages; i++)
+                    {
+                        <li class="@(Model.ViewModel.CurrentPage == i ? "active" : "")">
+                            <a href="?search=@Model.ViewModel.SearchTerm&category=@Model.ViewModel.SelectedCategory&page=@i" class="btn-secondary" aria-label="Go to page @i">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    </div>
+</div>
+@section Scripts {
+<script>
+// Autocomplete logic with keyboard navigation and ARIA support
+const searchInput = document.getElementById('searchInput');
+const autocompleteList = document.getElementById('autocompleteList');
+let activeIndex = -1;
+searchInput.addEventListener('input', function() {
+    const term = this.value;
+    if (term.length < 2) {
+        autocompleteList.style.display = 'none';
+        autocompleteList.innerHTML = '';
+        return;
+    }
+    fetch(`/Public/Autocomplete?term=${encodeURIComponent(term)}`)
+        .then(res => res.json())
+        .then(data => {
+            autocompleteList.innerHTML = '';
+            activeIndex = -1;
+            if (data.length > 0) {
+                autocompleteList.style.display = 'block';
+                data.forEach((item, idx) => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    li.setAttribute('role', 'option');
+                    li.setAttribute('tabindex', '-1');
+                    li.style.cursor = 'pointer';
+                    li.onclick = () => {
+                        searchInput.value = item;
+                        autocompleteList.style.display = 'none';
+                        autocompleteList.innerHTML = '';
+                    };
+                    autocompleteList.appendChild(li);
+                });
+            } else {
+                autocompleteList.style.display = 'none';
+            }
+        });
+});
+searchInput.addEventListener('keydown', function(e) {
+    const items = autocompleteList.querySelectorAll('li');
+    if (autocompleteList.style.display === 'block' && items.length > 0) {
+        if (e.key === 'ArrowDown') {
+            activeIndex = (activeIndex + 1) % items.length;
+            items.forEach((li, idx) => li.classList.toggle('active', idx === activeIndex));
+            items[activeIndex].focus();
+            e.preventDefault();
+        } else if (e.key === 'ArrowUp') {
+            activeIndex = (activeIndex - 1 + items.length) % items.length;
+            items.forEach((li, idx) => li.classList.toggle('active', idx === activeIndex));
+            items[activeIndex].focus();
+            e.preventDefault();
+        } else if (e.key === 'Enter' && activeIndex >= 0) {
+            searchInput.value = items[activeIndex].textContent;
+            autocompleteList.style.display = 'none';
+            autocompleteList.innerHTML = '';
+            e.preventDefault();
+        }
+    }
+});
+document.addEventListener('click', function(e) {
+    if (!searchInput.contains(e.target) && !autocompleteList.contains(e.target)) {
+        autocompleteList.style.display = 'none';
+    }
+});
+</script>
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin</title>
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-container">
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <nav class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="px-4 py-4">
+                    <span class="text-white text-2xl font-semibold">Admin Panel</span>
+                </div>
+            </div>
+
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a asp-page="/Admin/Index" class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Index" ? "active" : "")">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span class="ms-2">Dashboard</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a asp-page="/Admin/Articles/Index" class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Admin/Articles") == true ? "active" : "")">
+                        <i class="fas fa-box"></i>
+                        <span class="ms-2">Articles</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a asp-page="/Admin/Categories/Index" class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Admin/Categories") == true ? "active" : "")">
+                        <i class="fas fa-tags"></i>
+                        <span class="ms-2">Categories</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a asp-page="/Admin/Users/Index" class="nav-link @(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Admin/Users") == true ? "active" : "")">
+                        <i class="fas fa-users"></i>
+                        <span class="ms-2">Users</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="flex-shrink-0 flex bg-gray-700 p-4 mt-auto">
+                <div class="w-full">
+                    <div class="flex items-center">
+                        <div>
+                            <i class="fas fa-user-circle fa-2x text-gray-300"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-white">@User.Identity?.Name</p>
+                            <form asp-page="/Account/Logout" asp-route-returnUrl="/" method="post">
+                                <button type="submit" class="btn btn-link text-xs font-medium text-gray-300 hover:text-white">Sign out</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="header-search">
+                    <input type="text" placeholder="Search..." id="globalSearch" />
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="header-profile">
+                    <!-- Profile / actions could go here -->
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="container-fluid">
+                    <h1 class="page-title">@ViewData["Title"]</h1>
+                    @RenderBody()
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

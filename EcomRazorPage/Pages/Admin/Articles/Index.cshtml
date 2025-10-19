@@ -1,0 +1,126 @@
+﻿@page
+@model EcomRazorPage.Pages.Admin.Articles.IndexModel
+
+@{
+    ViewData["Title"] = "Articles Management";
+    Layout = "_AdminLayout";
+}
+
+<link rel="stylesheet" href="~/css/articles.css" />
+
+<div class="articles-container">
+    <div class="header d-flex justify-content-between align-items-center">
+        <h1>Articles</h1>
+        <a asp-page="./Create" class="btn btn-primary"> 
+            <i class="fas fa-plus"></i>
+            New Article
+        </a>
+    </div>
+
+    <div class="mb-3 d-flex">
+        <input type="text" id="searchInput" class="form-control me-2" placeholder="Search by title or category..." value="@Model.Search" />
+        <button id="searchBtn" class="btn btn-warning"><i class="fas fa-search"></i></button>
+    </div>
+
+    <div id="articlesTableContainer">
+        <div class="card data-table">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped" id="articlesTable">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Articles)
+                            {
+                                <tr>
+                                    <td>@item.Title</td>
+                                    <td>@(item.Category?.Name ?? "Uncategorized")</td>
+                                    <td>@item.Price.ToString("C")</td>
+                                    <td>@item.StockQuantity</td>
+                                    <td>
+                                        <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary me-1">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav>
+        <ul class="pagination justify-content-center mt-3" id="paginationContainer">
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.Page ? "active" : "")">
+                    <a class="page-link" href="#" onclick="loadPage(@i); return false;">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
+
+@section Scripts {
+    <script>
+        function renderTable(items) {
+            var tbody = $('#articlesTable tbody');
+            tbody.empty();
+            items.forEach(function (it) {
+                var row = '<tr>' +
+                    '<td>' + it.title + '</td>' +
+                    '<td>' + it.category + '</td>' +
+                    '<td>' + it.price.toFixed(2) + '</td>' +
+                    '<td>' + it.stock + '</td>' +
+                    '<td>' +
+                    '<a class="btn btn-sm btn-primary me-1" href="/Admin/Articles/Edit/' + it.id + '"><i class="fas fa-edit"></i></a>' +
+                    '<a class="btn btn-sm btn-danger" href="/Admin/Articles/Delete/' + it.id + '"><i class="fas fa-trash"></i></a>' +
+                    '</td>' +
+                    '</tr>';
+                tbody.append(row);
+            });
+        }
+
+        function renderPagination(totalPages, currentPage) {
+            var container = $('#paginationContainer');
+            container.empty();
+            for (var i = 1; i <= totalPages; i++) {
+                var active = i === currentPage ? 'active' : '';
+                var li = '<li class="page-item ' + active + '"><a class="page-link" href="#" onclick="loadPage(' + i + '); return false;">' + i + '</a></li>';
+                container.append(li);
+            }
+        }
+
+        function loadPage(page) {
+            var search = $('#searchInput').val();
+            $.get('@Url.Page("./Index", null, new { handler = "Data" })', { search: search, page: page }, function (res) {
+                if (res.error) {
+                    alert(res.error);
+                } else {
+                    renderTable(res.items);
+                    renderPagination(res.totalPages, res.page);
+                }
+            });
+        }
+
+        $('#searchBtn').on('click', function () {
+            loadPage(1);
+        });
+
+        $('#searchInput').on('keyup', function (e) {
+            if (e.key === 'Enter') loadPage(1);
+        });
+    </script>
+}
